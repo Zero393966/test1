@@ -1,110 +1,166 @@
-openapi: 3.1.0
-info:
-  title: 示例API
-  description: 这是一个示例OpenAPI 3.1规范，展示如何使用外部组件
-  version: 1.0.0
-  contact:
-    name: API支持团队
-    email: support@example.com
-  license:
-    name: MIT
-    url: https://opensource.org/licenses/MIT
-
-servers:
-  - url: https://api.example.com/v1
-    description: 生产环境
-  - url: https://staging-api.example.com/v1
-    description: 测试环境
-
-paths:
-  /users/{userId}:
-    get:
-      summary: 获取用户信息
-      description: 根据用户ID获取用户的详细信息
-      operationId: getUserById
-      tags:
-        - 用户管理
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          description: 用户的唯一标识符
-          schema:
-            type: string
-            pattern: '^[a-zA-Z0-9]{8,}$'
-            example: "user12345"
-        - name: includeProfile
-          in: query
-          required: false
-          description: 是否包含用户档案信息
-          schema:
-            type: boolean
-            default: false
-      responses:
-        '200':
-          description: 成功获取用户信息
-          content:
-            application/json:
-              schema:
-                type: string
-        '400':
-          description: 请求参数错误
-          content:
-            application/json:
-              schema:
-                type: string
-              examples:
-                invalidUserId:
-                  summary: 无效用户ID
-                  value:
-                    success: false
-                    error:
-                      code: "INVALID_USER_ID"
-                      message: "用户ID格式不正确"
-                      details: "用户ID必须为8位或以上的字母数字组合"
-        '404':
-          description: 用户不存在
-          content:
-            application/json:
-              schema:
-                type: string
-              examples:
-                userNotFound:
-                  summary: 用户不存在
-                  value:
-                    success: false
-                    error:
-                      code: "USER_NOT_FOUND"
-                      message: "指定的用户不存在"
-                      details: "用户ID user12345 在系统中未找到"
-        '500':
-          description: 服务器内部错误
-          content:
-            application/json:
-              schema:
-                type: string
-              examples:
-                serverError:
-                  summary: 服务器错误
-                  value:
-                    success: false
-                    error:
-                      code: "INTERNAL_SERVER_ERROR"
-                      message: "服务器内部错误"
-                      details: "请稍后重试或联系技术支持"
-      security:
-        - BearerAuth: []
-        - ApiKeyAuth: []
-
-components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      description: JWT令牌认证
-    ApiKeyAuth:
-      type: apiKey
-      in: header
-      name: X-API-Key
-      description: API密钥认证
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "示例API",
+    "description": "这是一个示例OpenAPI 3.1规范，展示如何使用外部组件",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API支持团队",
+      "email": "support@example.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com/v1",
+      "description": "生产环境"
+    },
+    {
+      "url": "https://staging-api.example.com/v1",
+      "description": "测试环境"
+    }
+  ],
+  "paths": {
+    "/users/{userId}": {
+      "get": {
+        "summary": "获取用户信息",
+        "description": "根据用户ID获取用户的详细信息",
+        "operationId": "getUserById",
+        "tags": [
+          "用户管理"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "用户的唯一标识符",
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9]{8,}$",
+              "example": "user12345"
+            }
+          },
+          {
+            "name": "includeProfile",
+            "in": "query",
+            "required": false,
+            "description": "是否包含用户档案信息",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取用户信息",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "invalidUserId": {
+                    "summary": "无效用户ID",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_USER_ID",
+                        "message": "用户ID格式不正确",
+                        "details": "用户ID必须为8位或以上的字母数字组合"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "用户不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "userNotFound": {
+                    "summary": "用户不存在",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "USER_NOT_FOUND",
+                        "message": "指定的用户不存在",
+                        "details": "用户ID user12345 在系统中未找到"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "serverError": {
+                    "summary": "服务器错误",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INTERNAL_SERVER_ERROR",
+                        "message": "服务器内部错误",
+                        "details": "请稍后重试或联系技术支持"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT令牌认证"
+      },
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "API密钥认证"
+      }
+    }
+  }
+}
