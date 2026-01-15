@@ -1,0 +1,318 @@
+openapi: 3.0.3
+info:
+  title: Shared Components
+  version: 1.0.0
+  description: Shared component definitions used across multiple API specifications
+
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - username
+        - email
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the user
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+          description: User's username
+        email:
+          type: string
+          format: email
+          description: User's email address
+        firstName:
+          type: string
+          description: User's first name
+        lastName:
+          type: string
+          description: User's last name
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the user was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the user was last updated
+
+    Product:
+      type: object
+      required:
+        - id
+        - name
+        - price
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the product
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Product name
+        description:
+          type: string
+          maxLength: 2000
+          description: Product description
+        price:
+          type: number
+          format: double
+          minimum: 0
+          description: Product price
+        currency:
+          type: string
+          enum: [USD, EUR, GBP, JPY, CNY]
+          default: USD
+          description: Currency code
+        category:
+          type: string
+          description: Product category
+        inStock:
+          type: boolean
+          default: true
+          description: Whether the product is in stock
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the product was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the product was last updated
+
+    Order:
+      type: object
+      required:
+        - id
+        - userId
+        - items
+        - totalAmount
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the order
+        userId:
+          type: string
+          format: uuid
+          description: ID of the user who placed the order
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+          minItems: 1
+          description: List of items in the order
+        totalAmount:
+          type: number
+          format: double
+          minimum: 0
+          description: Total amount of the order
+        currency:
+          type: string
+          enum: [USD, EUR, GBP, JPY, CNY]
+          default: USD
+          description: Currency code
+        status:
+          type: string
+          enum: [pending, processing, shipped, delivered, cancelled]
+          description: Current status of the order
+        shippingAddress:
+          $ref: '#/components/schemas/Address'
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the order was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the order was last updated
+
+    OrderItem:
+      type: object
+      required:
+        - productId
+        - quantity
+        - price
+      properties:
+        productId:
+          type: string
+          format: uuid
+          description: ID of the product
+        productName:
+          type: string
+          description: Name of the product at time of order
+        quantity:
+          type: integer
+          minimum: 1
+          description: Quantity ordered
+        price:
+          type: number
+          format: double
+          minimum: 0
+          description: Price per unit at time of order
+
+    Address:
+      type: object
+      required:
+        - street
+        - city
+        - country
+        - postalCode
+      properties:
+        street:
+          type: string
+          description: Street address
+        city:
+          type: string
+          description: City name
+        state:
+          type: string
+          description: State or province
+        country:
+          type: string
+          description: Country name
+        postalCode:
+          type: string
+          description: Postal or ZIP code
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          additionalProperties: true
+          description: Additional error details
+
+    PaginationMetadata:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          description: Current page number
+        pageSize:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Number of items per page
+        totalPages:
+          type: integer
+          minimum: 0
+          description: Total number of pages
+        totalItems:
+          type: integer
+          minimum: 0
+          description: Total number of items
+
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      description: Page number for pagination
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    PageSizeParam:
+      name: pageSize
+      in: query
+      description: Number of items per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    UserIdParam:
+      name: userId
+      in: path
+      required: true
+      description: User ID
+      schema:
+        type: string
+        format: uuid
+
+    ProductIdParam:
+      name: productId
+      in: path
+      required: true
+      description: Product ID
+      schema:
+        type: string
+        format: uuid
+
+    OrderIdParam:
+      name: orderId
+      in: path
+      required: true
+      description: Order ID
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token authentication
+
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key authentication
